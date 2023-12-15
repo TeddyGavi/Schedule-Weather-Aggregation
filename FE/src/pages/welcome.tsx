@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 
 export default function Welcome() {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 ">
-      <h1 className="text-4xl  ">
+    <div className="flex flex-col bg-opacity-90 p-3 rounded-lg bg-white items-center justify-center gap-4 ">
+      <h1 className="text-4xl drop-shadow-lg">
         Welcome to the last Todo app you will need!
       </h1>
       <p className="text-2xl  ">

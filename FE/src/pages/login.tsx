@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Link } from 'react-router-dom';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -43,57 +44,68 @@ export default function LoginPage() {
     console.log(values);
   }
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 w-1/2 mx-auto"
-      >
-        {' '}
-        <p className="text-center md:text-3xl text-lg ">
-          Hello! Please Login or Register
-        </p>
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="example@gmail.com"
-                  type="email"
-                  required
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>Please enter a valid E-mail</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="password"
-                  type="password"
-                  required
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>Please enter a valid Password</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button className="w-full" type="submit">
-          Submit
-        </Button>
-      </form>
-    </Form>
+    <div className="bg-white bg-opacity-90 p-3 rounded-lg">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 mx-auto"
+        >
+          {' '}
+          <p className="text-center md:text-3xl drop-shadow-lg  text-lg ">
+            Hello! Please Login or Register
+          </p>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="example@gmail.com"
+                    type="email"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>Please enter a valid E-mail</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="password"
+                    type="password"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>Please enter a valid Password</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button className="w-full" type="submit">
+            Submit
+          </Button>
+        </form>
+      </Form>
+
+      <div className="relative flex mt-4 py-5 w-full text-sm items-center">
+        <div className="flex-grow border border-t border-black"></div>
+        <span className="flex-shrink mx-4 text-black">Need an Account?</span>
+        <div className="flex-grow border  border-t border-black"></div>{' '}
+      </div>
+      <Link to={'/register'}>
+        <Button className="w-full "> Register</Button>
+      </Link>
+    </div>
   );
 }
