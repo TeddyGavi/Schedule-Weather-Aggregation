@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    build:
+      context: ./BE
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQLDB_PASSWORD
+      MYSQL_DATABASE_NAME: $MYSQL_DATABASE_NAME
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+
+  nestjs-app:
+    container_name: nestjs-app
+    depends_on:
+      - mysqldb
+    build:
+      context: ./BE
+    restart: unless-stopped
+    ports:
+      - $NESTJS_APP_LOCAL_PORT:$NESTJS_APP_DOCKER_PORT
+    env_file:
+      - ./.env
+    environment:
+      - DB_HOST=$MYSQLDB_HOST
+      - DB_USER=$MYSQLDB_USER
+      - DB_PASSWORD=$MYSQLDB_PASSWORD
+      - DB_DATABASE=$MYSQLDB_DATABASE
+      - DB_PORT=$MYSQLDB_DOCKER_PORT
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+volumes:
+  mysqldb:
