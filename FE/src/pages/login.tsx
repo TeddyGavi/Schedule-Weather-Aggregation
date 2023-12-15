@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,12 +16,9 @@ import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z
-    .string()
-    .min(2)
-    .max(50)
-    .regex(new RegExp('.*[A-Z].*'), 'One uppercase character')
-    .regex(new RegExp('.*\\d.*'), 'One number'),
+  password: z.string().min(2).max(50),
+  // .regex(new RegExp('.*[A-Z].*'), 'One uppercase character')
+  // .regex(new RegExp('.*\\d.*'), 'One number'),
 });
 
 export default function LoginPage() {
@@ -36,6 +34,12 @@ export default function LoginPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    const { email, password } = values;
+    axios
+      .post('http://localhost:8080/auth/login', { email, password })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+
     console.log(values);
   }
   return (
@@ -55,7 +59,12 @@ export default function LoginPage() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" type="email" required {...field} />
+                <Input
+                  placeholder="example@gmail.com"
+                  type="email"
+                  required
+                  {...field}
+                />
               </FormControl>
               <FormDescription>Please enter a valid E-mail</FormDescription>
               <FormMessage />
@@ -70,7 +79,7 @@ export default function LoginPage() {
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="shadcn"
+                  placeholder="password"
                   type="password"
                   required
                   {...field}
