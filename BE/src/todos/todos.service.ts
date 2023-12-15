@@ -23,6 +23,7 @@ export class TodosService {
       const todo = new Todos();
       (todo.task = `${faker.word.sample()} ${faker.word.verb()}`),
         (todo.user = randomUser);
+      todo.created_at = faker.date.recent();
       todos.push(todo);
     }
     return this.TodosRepository.save(todos);
@@ -45,10 +46,15 @@ export class TodosService {
     return todosByUser;
   }
 
-  async findOtherUsersTodos(id: string) {
+  async findOtherUsersTodos(id: string, skip = 0, take = 10) {
     const todosByOthers = await this.TodosRepository.find({
       where: {
         user: { id: Not(id) },
+      },
+      skip,
+      take,
+      order: {
+        created_at: 'DESC',
       },
     });
     return todosByOthers;
