@@ -1,9 +1,11 @@
+import { Users } from 'src/users/entities/user.entity';
 import {
   BaseEntity,
   Column,
   PrimaryGeneratedColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -17,12 +19,15 @@ export class Todos extends BaseEntity {
   @Column({ default: false })
   completed: boolean;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
-  @Column({ type: 'datetime', default: null })
-  updated_at: Date;
+  @Column({ type: 'timestamp', default: null })
+  completed_at: Date;
 
-  @JoinColumn({ name: 'user_id' })
-  user_id: string;
+  // @JoinColumn({ name: 'user_id' })
+  // user_id: string;
+
+  @ManyToOne(() => Users, (user) => user.todos, { onDelete: 'CASCADE' })
+  user: Users;
 }

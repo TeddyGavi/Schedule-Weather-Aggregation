@@ -4,7 +4,9 @@ export class CreateTodoDto {
   @IsString()
   task: string;
   @IsBoolean()
-  completed: boolean;
+  completed?: boolean;
   @IsDate()
-  created_at: Date;
+  created_at?: Date;
+  @IsString()
+  user_id: string;
 }

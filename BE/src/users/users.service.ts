@@ -14,6 +14,7 @@ export class UsersService {
   ) {}
 
   async seedUsers(count: number) {
+    if ((await this.countUsers()) > 0) return;
     const users = Array.from({ length: count }, () => {
       const user = new Users();
       user.firstName = faker.person.firstName();
@@ -24,23 +25,37 @@ export class UsersService {
     });
     return this.UserRepository.save(users);
   }
+
+  async countUsers(): Promise<number> {
+    return await this.UserRepository.count();
+  }
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    const user = this.UserRepository.create(createUserDto);
+    return this.UserRepository.save(user);
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.UserRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.UserRepository.findOneBy({ id: id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(id);
+    if (user) {
+      user.firstName = updateUserDto.firstName;
+      user.lastName = updateUserDto.lastName;
+      return await this.UserRepository.save(user);
+    }
+    return { user: 'Not Found' };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const isRemoved = await this.UserRepository.delete({ id: id });
+    return isRemoved.affected > 0
+      ? { user: `User ${id} removed` }
+      : { user: 'Not Found' };
   }
 }
