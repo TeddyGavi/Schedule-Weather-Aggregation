@@ -34,12 +34,20 @@ export class UsersService {
     return this.UserRepository.save(user);
   }
 
+  async isEmailTaken(email: string): Promise<boolean> {
+    const existingUser = await this.UserRepository.findOneBy({ email });
+    return !!existingUser;
+  }
+
   findAll() {
     return this.UserRepository.find();
   }
 
   async findOne(id: string) {
-    return await this.UserRepository.findOneBy({ id: id });
+    return await this.UserRepository.findOne({
+      where: { id },
+      select: { id: true, firstName: true, lastName: true, email: true },
+    });
   }
 
   async findOneByEmail(email: string) {

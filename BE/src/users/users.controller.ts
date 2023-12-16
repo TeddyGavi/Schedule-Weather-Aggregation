@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+@ApiTags('Users')
+@ApiBearerAuth('jwt-token')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -26,8 +29,14 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findUserById(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+
+  @Get('/me')
+  findOne(@Request() req) {
+    const user = req.user;
+    return this.usersService.findOne(user.sub);
   }
 
   @Patch(':id')
