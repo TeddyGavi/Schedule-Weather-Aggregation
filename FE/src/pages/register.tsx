@@ -13,20 +13,26 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(2).max(50),
-  // .regex(new RegExp('.*[A-Z].*'), 'One uppercase character')
-  // .regex(new RegExp('.*\\d.*'), 'One number'),
+  email: z.string().email().trim(),
+  password: z
+    .string()
+    .min(2)
+    .max(50)
+    .regex(new RegExp('.*[A-Z].*'), 'One uppercase character')
+    .regex(new RegExp('.*\\d.*'), 'One number'),
+  firstName: z.string().min(1).trim(),
+  lastName: z.string().min(1),
 });
 
-export default function LoginPage() {
-  const router = useNavigate();
+export default function RegisterPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
     },
@@ -36,19 +42,15 @@ export default function LoginPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    const { email, password } = values;
+    const { email, firstName, lastName, password } = values;
     axios
-      .post(`${import.meta.env.VITE_BE_BASE_URL}/auth/login`, {
+      .post(`${import.meta.env.VITE_BE_BASE_URL}/auth/register`, {
         email,
+        firstName,
+        lastName,
         password,
       })
-      .then((res) => {
-        const { jwt_token } = res.data;
-        sessionStorage.setItem('jwt', jwt_token);
-        console.log(jwt_token);
-        console.log(res);
-        router('/todos');
-      })
+      .then((res) => console.log(res))
       .catch((err) => console.log(err));
 
     console.log(values);
@@ -62,8 +64,46 @@ export default function LoginPage() {
         >
           {' '}
           <p className="text-center md:text-3xl drop-shadow-lg  text-lg ">
-            Hello! Please Login or Register
+            Sign Up Here!
           </p>
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fist Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="First Name"
+                    type="text"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>Enter your First Name</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Last Name"
+                    type="text"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>Enter your Last Name</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
@@ -103,18 +143,17 @@ export default function LoginPage() {
             )}
           />
           <Button className="w-full" type="submit">
-            Login
+            Submit
           </Button>
         </form>
       </Form>
-
       <div className="relative flex mt-4 py-5 w-full text-sm items-center">
         <div className="flex-grow border border-t border-black"></div>
-        <span className="flex-shrink mx-4 text-black">Need an Account?</span>
+        <span className="flex-shrink mx-4 text-black">Back to Login?</span>
         <div className="flex-grow border  border-t border-black"></div>{' '}
       </div>
-      <Link to={'/register'}>
-        <Button className="w-full "> Register</Button>
+      <Link to={'/login'}>
+        <Button className="w-full "> Login?</Button>
       </Link>
     </div>
   );

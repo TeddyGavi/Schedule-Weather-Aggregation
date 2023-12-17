@@ -26,7 +26,7 @@ export class AuthService {
 
   async register(newUser: CreateUserDto) {
     const { email } = newUser;
-    const isEmailTaken = this.usersService.isEmailTaken(email);
+    const isEmailTaken = await this.usersService.isEmailTaken(email);
 
     if (isEmailTaken) {
       throw new ConflictException('Email is already taken');

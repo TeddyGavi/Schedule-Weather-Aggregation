@@ -7,7 +7,7 @@ async function bootstrap() {
   const port = +process.env.NESTJS_APP_DOCKER_PORT;
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  // app.use(cookieParser());
+  app.use(cookieParser());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Not Your Todos')

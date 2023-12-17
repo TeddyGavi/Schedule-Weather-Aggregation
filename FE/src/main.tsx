@@ -6,6 +6,8 @@ import Root from './routes/root.tsx';
 import ErrorPage from './pages/error-page.tsx';
 import LoginPage from './pages/login.tsx';
 import Welcome from './pages/welcome.tsx';
+import RegisterPage from './pages/register.tsx';
+import TodosPage from './pages/todos.tsx';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +23,11 @@ const router = createBrowserRouter([
         path: '/',
         element: <Welcome />,
       },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+      },
+      { path: '/todos', element: <TodosPage /> },
     ],
   },
 ]);

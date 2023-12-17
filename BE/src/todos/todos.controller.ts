@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   Query,
+  Req,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -18,6 +19,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 
 @ApiTags('Todos')
 @ApiBearerAuth()
@@ -42,15 +44,17 @@ export class TodosController {
     return this.todosService.findTodosbyUser(userId);
   }
 
-  @Get('/not/:userId')
+  @Get('/not/')
   @ApiOperation({ description: 'finds all others todos' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'perPage', required: false, type: Number })
   findTodosByOthers(
-    @Param('userId') userId: string,
+    @Req() req: Request,
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('perPage', new ParseIntPipe({ optional: true })) perPage?: number,
   ) {
+    const userId = req['user'];
+    console.log('contrtoller', req.cookies, userId);
     return this.todosService.findOtherUsersTodos(userId, page, perPage);
   }
 

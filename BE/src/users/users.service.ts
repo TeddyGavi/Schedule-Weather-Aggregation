@@ -29,13 +29,16 @@ export class UsersService {
   async countUsers(): Promise<number> {
     return await this.UserRepository.count();
   }
+
   create(createUserDto: CreateUserDto) {
     const user = this.UserRepository.create(createUserDto);
     return this.UserRepository.save(user);
   }
 
   async isEmailTaken(email: string): Promise<boolean> {
-    const existingUser = await this.UserRepository.findOneBy({ email });
+    const existingUser = await this.UserRepository.findOne({
+      where: { email: email },
+    });
     return !!existingUser;
   }
 
