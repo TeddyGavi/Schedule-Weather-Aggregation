@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/use-auth';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -23,6 +24,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const { signIn } = useAuth();
   const router = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,28 +35,29 @@ export default function LoginPage() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     const { email, password } = values;
-    axios
-      .post(
-        `${import.meta.env.VITE_BE_BASE_URL}/auth/login`,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        },
-      )
-      .then((res) => {
-        console.log(res);
-        router('/todos');
-      })
-      .catch((err) => console.log(err));
-
-    console.log(values);
+    return await signIn(email, password, () => router('/todos'));
+    // axios
+    //   .post(
+    //     `${import.meta.env.VITE_BE_BASE_URL}/auth/login`,
+    //     {
+    //       email,
+    //       password,
+    //     },
+    //     {
+    //       withCredentials: true,
+    //     },
+    //   )
+    //   .then((res) => {
+    //     console.log(res);
+    //     router('/todos');
+    //   })
+    //   .catch((err) => console.log(err));
+    //
+    // console.log(values);
   }
   return (
     <div className="bg-white bg-opacity-90 p-3 w-10/12 md:w-6/12 rounded-lg">

@@ -28,7 +28,9 @@ export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto) {
+  create(@Req() req, @Body() createTodoDto: CreateTodoDto) {
+    console.log('hi from todos post', req.user, createTodoDto);
+    createTodoDto.user_id = req.user.user_id;
     return this.todosService.create(createTodoDto);
   }
 
@@ -54,7 +56,6 @@ export class TodosController {
     @Query('perPage', new ParseIntPipe({ optional: true })) perPage?: number,
   ) {
     const { user_id } = req.user;
-    console.log('in todos/not', req.user);
     return this.todosService.findOtherUsersTodos(user_id, page, perPage);
   }
 
@@ -72,8 +73,8 @@ export class TodosController {
     return this.todosService.update(id, updateTodoDto);
   }
 
-  @Delete('/delete')
-  remove(@Req() req) {
-    return this.todosService.remove(req.user.user_id);
+  @Delete('/delete/:id')
+  remove(@Param('id') id: string) {
+    return this.todosService.remove(id);
   }
 }

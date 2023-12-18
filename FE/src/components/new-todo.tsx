@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
 
 const newTodoSchema = z.object({
   task: z.string().min(3),
@@ -31,14 +32,21 @@ export default function NewTodoFormInput() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof newTodoSchema>) {
-    console.log(values);
-    //TODO: submit new todo
+  function onSubmitNewTodo(values: z.infer<typeof newTodoSchema>) {
+    const { task, created_at, completed, completed_at } = values;
+    axios
+      .post(
+        `${import.meta.env.VITE_BE_BASE_URL}/todos`,
+        { task, created_at, completed, completed_at },
+        { withCredentials: true },
+      )
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmitNewTodo)}>
         <p className=" text-center underline">Add a New Todo</p>
         <FormField
           control={form.control}

@@ -6,7 +6,11 @@ interface ITodo {
   status: string;
   id: string;
   completed: boolean;
-  handleClickComplete: (id: string) => void;
+  handleClickedComplete: (id: string) => void;
+  handleClickDelete: (id: string) => void;
+  completed_at: string;
+  created_at: string;
+  ownerFirstName: string;
 }
 
 export function Todo({
@@ -14,29 +18,49 @@ export function Todo({
   status,
   id,
   completed,
-  handleClickComplete,
+  handleClickedComplete,
+  completed_at,
+  created_at,
+  handleClickDelete,
+  ownerFirstName,
 }: ITodo) {
+  const getReadableDate = (date: string) => {
+    return new Date(date).toLocaleDateString();
+  };
   return (
     <div
-      id={id}
+      className="m-2 w-9/12 mx-auto p-2 flex flex-col gap-4 md:gap-0  justify-between items-center border border-black rounded-lg"
       key={id}
-      className="m-2 w-9/12 mx-auto p-2 flex justify-between items-center border border-black rounded-lg"
     >
-      <h2 className="w-full">{title}</h2>
-      <div className="px-4">
-        <Badge className={`${completed ? 'bg-green-500' : ''}`}>{status}</Badge>
+      <p className="font-bold ">Owner: {ownerFirstName} </p>
+      <div
+        id={id}
+        className="w-full mx-auto items-center flex lg:flex-row flex-col gap-4 md:gap-0"
+      >
+        <h2 className="w-full">{title}</h2>
+        <div className="px-4">
+          <Badge className={`${completed ? 'bg-green-500' : ''} `}>
+            {status}
+          </Badge>
+        </div>
+        {completed ? (
+          <Button onClick={() => handleClickDelete(id)} variant="destructive">
+            Delete
+          </Button>
+        ) : (
+          <Button onClick={() => handleClickedComplete(id)}>Complete?</Button>
+        )}
       </div>
-      {completed ? (
-        <Button
-          onClick={() => handleClickComplete(id)}
-          disabled
-          variant="outline"
-        >
-          Done!
-        </Button>
-      ) : (
-        <Button onClick={() => handleClickComplete(id)}>Complete?</Button>
-      )}
+      <div className="flex w-full mx-auto items-center justify-between">
+        <div>
+          <span className="font-bold">Completed at: </span>
+          {completed_at ? getReadableDate(completed_at) : 'Not Yet!'}
+        </div>
+        <div>
+          <span className="font-bold">Created at:</span>{' '}
+          {getReadableDate(created_at)}
+        </div>
+      </div>
     </div>
   );
 }

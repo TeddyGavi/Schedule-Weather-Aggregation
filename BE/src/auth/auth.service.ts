@@ -46,4 +46,8 @@ export class AuthService {
 
     return await this.jwtService.signAsync(payload);
   }
+
+  async logout() {
+    return 'hi from service';
+  }
 }

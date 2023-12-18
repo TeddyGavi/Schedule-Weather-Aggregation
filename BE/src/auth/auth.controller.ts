@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Request,
   Res,
   UseGuards,
@@ -51,5 +53,21 @@ export class AuthController {
       expires: new Date(Date.now() + 3600000),
     });
     return res.json({ sucess: true });
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Get('logout')
+  async logout(@Res() res, @Req() req) {
+    res.clearCookie('jwt_token');
+    return res.json({ success: true });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('validate')
+  async validate(@Res() res, @Req() req) {
+    console.log('hi from validate, controller', req.user);
+
+    return res.json({ success: true });
   }
 }

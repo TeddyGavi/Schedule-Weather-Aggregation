@@ -7,9 +7,7 @@ export default function Welcome() {
       <h1 className="text-4xl drop-shadow-lg">
         Welcome to the last Todo app you will need!
       </h1>
-      <p className="text-2xl  ">
-        There is just one catch... sign up to find out!
-      </p>
+      <p className="text-2xl  ">There is just one catch... sign to find out!</p>
       <div className="relative flex py-5 w-full items-center">
         <div className="flex-grow border border-t border-black"></div>
         <span className="flex-shrink mx-4 text-black">If you dare...</span>

@@ -30,6 +30,7 @@ export class TodosService {
   }
   async create(createTodoDto: CreateTodoDto) {
     const todo = this.TodosRepository.create(createTodoDto);
+    console.log(todo);
     return await this.TodosRepository.save(todo);
   }
 
@@ -46,17 +47,17 @@ export class TodosService {
     return todosByUser;
   }
 
-  async findOtherUsersTodos(id: string, skip = 0, take) {
-    const todosByOthers = await this.TodosRepository.find({
-      where: {
-        user: { id: Not(id) },
-      },
-      skip,
-      take,
-      order: {
-        created_at: 'DESC',
-      },
-    });
+  async findOtherUsersTodos(id: string, skip = 0, take = 10) {
+    const todosByOthers = await this.TodosRepository.query(
+      `SELECT t.*, u.firstName AS ownerFirstName
+      FROM todos t
+      LEFT JOIN users u ON t.userId = u.id
+      WHERE t.userId != ? 
+      ORDER BY t.created_at DESC
+      LIMIT ?, ?`,
+      [id, skip, take],
+    );
+
     return todosByOthers;
   }
 
