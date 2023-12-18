@@ -1,13 +1,15 @@
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 
-export default function PaginationCount({
+interface Props {
+  page: number;
+  handleCountUp: () => void;
+  handleCountDown: () => void;
+}
+export const PaginationCount = ({
   page,
   handleCountUp,
   handleCountDown,
-}) {
-  const [count, setCount] = useState(1);
-
+}: Props) => {
   return (
     <div className="flex w-full flex-col items-center justify-center">
       Next Page?
@@ -23,4 +25,4 @@ export default function PaginationCount({
       </div>
     </div>
   );
-}
+};

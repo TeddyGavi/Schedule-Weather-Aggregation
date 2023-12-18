@@ -3,7 +3,7 @@ import { Todo } from '../components/todo';
 import axios from 'axios';
 import NewTodoFormInput from '../components/new-todo';
 import Header from '../components/header';
-import PaginationCount from '../components/pagination-count';
+import { PaginationCount } from '../components/pagination-count';
 
 interface ITodoDB {
   id: string;
@@ -13,11 +13,15 @@ interface ITodoDB {
   completed: boolean;
   ownerFirstName: string;
 }
-type Todos = ITodoDB[];
+type Todos = { todosByOthers: ITodoDB[]; count: number };
 
 export default function TodosPage() {
-  const [todoList, setTodoList] = useState<Todos>([]);
+  const [todoList, setTodoList] = useState<Todos>({
+    todosByOthers: [],
+    count: 0,
+  });
   const [page, setPage] = useState<number>(0);
+
   useEffect(() => {
     const controller = new AbortController();
     axios
@@ -34,11 +38,11 @@ export default function TodosPage() {
   }, [page]);
 
   const handleCountUp = () => {
-    setPage((prev) => (prev += 1));
+    setPage((prev) => (prev += 10));
   };
 
   const handleCountDown = () => {
-    setPage((prev) => (prev === 0 ? 0 : (prev -= 1)));
+    setPage((prev) => (prev === 0 ? 0 : (prev -= 10)));
   };
 
   const handleClickedComplete = (id: string) => {
@@ -91,7 +95,7 @@ export default function TodosPage() {
         <NewTodoFormInput />
       </div>
       <div className=" rounded-lg p-4 scroll-mx-2 overflow-auto">
-        {todoList.map(
+        {todoList.todosByOthers.map(
           ({
             id,
             completed,

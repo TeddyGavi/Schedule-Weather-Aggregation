@@ -9,7 +9,6 @@ import Welcome from './pages/welcome.tsx';
 import RegisterPage from './pages/register.tsx';
 import TodosPage from './pages/todos.tsx';
 import { AuthProvider } from './context/auth-context.tsx';
-import App from './App.tsx';
 
 const router = createBrowserRouter([
   {

@@ -58,7 +58,13 @@ export class TodosService {
       [id, skip, take],
     );
 
-    return todosByOthers;
+    const count = await this.TodosRepository.query(
+      `SELECT COUNT(*) AS totalCount
+      FROM todos
+      WHERE userId != ?`,
+      [id],
+    );
+    return { todosByOthers, count: +count[0].totalCount };
   }
 
   async findAll() {
