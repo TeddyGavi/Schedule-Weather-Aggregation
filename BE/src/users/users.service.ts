@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { faker } from '@faker-js/faker';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -15,12 +16,13 @@ export class UsersService {
 
   async seedUsers(count: number) {
     if ((await this.countUsers()) > 0) return;
+    const hashedPassword = await bcrypt.hash('123', 10);
     const users = Array.from({ length: count }, () => {
       const user = new Users();
       user.firstName = faker.person.firstName();
       user.lastName = faker.person.lastName();
       user.email = faker.internet.email();
-      user.password = '123';
+      user.password = hashedPassword;
       return user;
     });
     return this.UserRepository.save(users);
@@ -30,7 +32,9 @@ export class UsersService {
     return await this.UserRepository.count();
   }
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
+    console.log(createUserDto);
     const user = this.UserRepository.create(createUserDto);
     return this.UserRepository.save(user);
   }
