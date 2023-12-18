@@ -47,15 +47,16 @@ export class TodosService {
     return todosByUser;
   }
 
-  async findOtherUsersTodos(id: string, skip = 0, take = 10) {
+  async findOtherUsersTodos(id: string, page = 1, pageSize = 10) {
+    const skip = (page - 1) * pageSize;
     const todosByOthers = await this.TodosRepository.query(
       `SELECT t.*, u.firstName AS ownerFirstName
       FROM todos t
       LEFT JOIN users u ON t.userId = u.id
       WHERE t.userId != ? 
-      ORDER BY t.created_at DESC
+      ORDER BY t.created_at DESC 
       LIMIT ?, ?`,
-      [id, skip, take],
+      [id, skip, pageSize],
     );
 
     const count = await this.TodosRepository.query(
@@ -64,7 +65,11 @@ export class TodosService {
       WHERE userId != ?`,
       [id],
     );
-    return { todosByOthers, count: +count[0].totalCount };
+    return {
+      todosByOthers,
+      count: +count[0].totalCount,
+      totalPages: Math.ceil(+count[0].totalCount / pageSize),
+    };
   }
 
   async findAll() {

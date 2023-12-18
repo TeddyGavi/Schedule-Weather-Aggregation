@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Todo } from '../components/todo';
 import axios from 'axios';
 import NewTodoFormInput from '../components/new-todo';
 import Header from '../components/header';
 import { PaginationCount } from '../components/pagination-count';
+import { GETTodos } from '../fetching/GET-todos';
+import useSWR from 'swr';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ITodoDB {
   id: string;
@@ -13,36 +16,22 @@ interface ITodoDB {
   completed: boolean;
   ownerFirstName: string;
 }
-type Todos = { todosByOthers: ITodoDB[]; count: number };
+type Todos = { todosByOthers: ITodoDB[]; count: number; totalPages: number };
 
 export default function TodosPage() {
-  const [todoList, setTodoList] = useState<Todos>({
-    todosByOthers: [],
-    count: 0,
-  });
-  const [page, setPage] = useState<number>(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    axios
-      .get(`${import.meta.env.VITE_BE_BASE_URL}/todos/not?page=${page}`, {
-        withCredentials: true,
-        signal: controller.signal,
-      })
-      .then((res) => {
-        setTodoList(res.data);
-      })
-      .catch((err) => console.log(err));
-
-    return () => controller.abort();
-  }, [page]);
+  const [page, setPage] = useState<number>(1);
+  const {
+    data: todoList,
+    isLoading,
+    mutate,
+  } = useSWR<Todos>(['/todos', page], () => GETTodos(page));
 
   const handleCountUp = () => {
-    setPage((prev) => (prev += 10));
+    setPage((prev) => (prev += 1));
   };
 
   const handleCountDown = () => {
-    setPage((prev) => (prev === 0 ? 0 : (prev -= 10)));
+    setPage((prev) => (prev <= 1 ? 1 : (prev -= 1)));
   };
 
   const handleClickedComplete = (id: string) => {
@@ -56,13 +45,7 @@ export default function TodosPage() {
         { withCredentials: true },
       )
       .then(() => {
-        axios
-          .get(`${import.meta.env.VITE_BE_BASE_URL}/todos/not`, {
-            withCredentials: true,
-          })
-          .then((res) => {
-            setTodoList(res.data);
-          });
+        mutate(todoList);
       })
       .catch((err) => console.log(err));
   };
@@ -73,16 +56,11 @@ export default function TodosPage() {
         withCredentials: true,
       })
       .then(() => {
-        axios
-          .get(`${import.meta.env.VITE_BE_BASE_URL}/todos/not`, {
-            withCredentials: true,
-          })
-          .then((res) => {
-            setTodoList(res.data);
-          });
+        mutate(todoList);
       })
       .catch((err) => console.log(err));
   };
+
   return (
     <div className="bg-white bg-opacity-90 gap-12 h-[90vh] p-3 w-10/12 md:w-6/12 flex flex-col rounded-lg ">
       <div className="flex justify-evenly">
@@ -94,29 +72,37 @@ export default function TodosPage() {
       <div>
         <NewTodoFormInput />
       </div>
-      <div className=" rounded-lg p-4 scroll-mx-2 overflow-auto">
-        {todoList.todosByOthers.map(
-          ({
-            id,
-            completed,
-            task,
-            completed_at,
-            created_at,
-            ownerFirstName,
-          }) => (
-            <Todo
-              key={id}
-              title={task}
-              status={completed ? 'Done' : 'Todo'}
-              completed={completed}
-              handleClickedComplete={handleClickedComplete}
-              handleClickDelete={handleClickDelete}
-              id={id}
-              completed_at={completed_at}
-              created_at={created_at}
-              ownerFirstName={ownerFirstName}
-            />
-          ),
+      <div className=" rounded-lg p-4 scroll-mx-2 h-full overflow-auto">
+        {isLoading ? (
+          <div className="flex flex-col gap-4 ">
+            {Array.from({ length: 10 }, (_, index) => (
+              <Skeleton key={index} className="w-10/12 h-14" />
+            ))}{' '}
+          </div>
+        ) : (
+          todoList?.todosByOthers.map(
+            ({
+              id,
+              completed,
+              task,
+              completed_at,
+              created_at,
+              ownerFirstName,
+            }) => (
+              <Todo
+                key={id}
+                title={task}
+                status={completed ? 'Done' : 'Todo'}
+                completed={completed}
+                handleClickedComplete={handleClickedComplete}
+                handleClickDelete={handleClickDelete}
+                id={id}
+                completed_at={completed_at}
+                created_at={created_at}
+                ownerFirstName={ownerFirstName}
+              />
+            ),
+          )
         )}
       </div>{' '}
       <PaginationCount

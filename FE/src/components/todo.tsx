@@ -29,7 +29,7 @@ export function Todo({
   };
   return (
     <div
-      className="m-2 w-9/12 mx-auto p-2 flex flex-col gap-4 md:gap-0  justify-between items-center border border-black rounded-lg"
+      className="m-2 w-10/12 mx-auto p-1 flex flex-col gap-4 md:gap-0  justify-between items-center border border-black rounded-lg"
       key={id}
     >
       <p className="font-bold ">Owner: {ownerFirstName} </p>
