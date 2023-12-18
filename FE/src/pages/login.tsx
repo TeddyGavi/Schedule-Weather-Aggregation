@@ -18,8 +18,6 @@ import { useAuth } from '../hooks/use-auth';
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(2).max(50),
-  // .regex(new RegExp('.*[A-Z].*'), 'One uppercase character')
-  // .regex(new RegExp('.*\\d.*'), 'One number'),
 });
 
 export default function LoginPage() {
@@ -39,24 +37,6 @@ export default function LoginPage() {
     // ✅ This will be type-safe and validated.
     const { email, password } = values;
     return await signIn(email, password, () => router('/todos'));
-    // axios
-    //   .post(
-    //     `${import.meta.env.VITE_BE_BASE_URL}/auth/login`,
-    //     {
-    //       email,
-    //       password,
-    //     },
-    //     {
-    //       withCredentials: true,
-    //     },
-    //   )
-    //   .then((res) => {
-    //     console.log(res);
-    //     router('/todos');
-    //   })
-    //   .catch((err) => console.log(err));
-    //
-    // console.log(values);
   }
   return (
     <div className="bg-white bg-opacity-90 p-3 w-10/12 md:w-6/12 rounded-lg">
