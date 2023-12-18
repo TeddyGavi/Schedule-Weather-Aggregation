@@ -29,9 +29,8 @@ export class TodosController {
 
   @Post()
   create(@Req() req, @Body() createTodoDto: CreateTodoDto) {
-    console.log('hi from todos post', req.user, createTodoDto);
-    createTodoDto.user_id = req.user.user_id;
-    return this.todosService.create(createTodoDto);
+    createTodoDto.userId = req.user.user_id;
+    return this.todosService.create(createTodoDto, req.user.user_id);
   }
 
   @Get()

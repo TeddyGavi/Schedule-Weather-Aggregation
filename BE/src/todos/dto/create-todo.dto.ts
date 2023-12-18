@@ -1,4 +1,5 @@
 import { IsBoolean, IsDate, IsString } from 'class-validator';
+import { Users } from 'src/users/entities/user.entity';
 
 export class CreateTodoDto {
   @IsString()
@@ -8,5 +9,5 @@ export class CreateTodoDto {
   @IsDate()
   created_at?: Date;
   @IsString()
-  user_id: string;
+  userId: string;
 }

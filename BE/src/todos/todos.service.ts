@@ -3,7 +3,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Todos } from './entities/todo.entity';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Users } from 'src/users/entities/user.entity';
 import { faker } from '@faker-js/faker';
 
@@ -12,6 +12,8 @@ export class TodosService {
   constructor(
     @InjectRepository(Todos)
     private TodosRepository: Repository<Todos>,
+    @InjectRepository(Users)
+    private UsersRepository: Repository<Users>,
   ) {}
 
   async seedTodos(count: number, users: Users[]) {
@@ -28,10 +30,13 @@ export class TodosService {
     }
     return this.TodosRepository.save(todos);
   }
-  async create(createTodoDto: CreateTodoDto) {
-    const todo = this.TodosRepository.create(createTodoDto);
-    console.log(todo);
-    return await this.TodosRepository.save(todo);
+  async create(createTodoDto: CreateTodoDto, userId: string) {
+    const user = await this.UsersRepository.findOne({ where: { id: userId } });
+    const newTodo = this.TodosRepository.create({
+      ...createTodoDto,
+      user: user,
+    });
+    return await this.TodosRepository.save(newTodo);
   }
 
   async countAll(): Promise<number> {

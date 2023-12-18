@@ -16,7 +16,11 @@ interface ITodoDB {
   completed: boolean;
   ownerFirstName: string;
 }
-type Todos = { todosByOthers: ITodoDB[]; count: number; totalPages: number };
+export type Todos = {
+  todosByOthers: ITodoDB[];
+  count: number;
+  totalPages: number;
+};
 
 export default function TodosPage() {
   const [page, setPage] = useState<number>(1);
@@ -70,7 +74,7 @@ export default function TodosPage() {
         <Header />
       </div>
       <div>
-        <NewTodoFormInput />
+        <NewTodoFormInput mutate={mutate} />
       </div>
       <div className=" rounded-lg p-4 scroll-mx-2 h-full overflow-auto">
         {isLoading ? (

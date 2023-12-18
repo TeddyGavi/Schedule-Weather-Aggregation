@@ -12,7 +12,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import axios from 'axios';
+import { MutatorCallback } from 'swr';
+import { Todos } from 'src/pages/todos';
+import axiosInstance from '../fetching/axios-config';
 
 const newTodoSchema = z.object({
   task: z.string().min(3),
@@ -21,7 +23,11 @@ const newTodoSchema = z.object({
   completed_at: z.string().nullish(),
 });
 
-export default function NewTodoFormInput() {
+export default function NewTodoFormInput({
+  mutate,
+}: {
+  mutate: MutatorCallback<Todos[]>;
+}) {
   const form = useForm<z.infer<typeof newTodoSchema>>({
     resolver: zodResolver(newTodoSchema),
     defaultValues: {
@@ -34,13 +40,11 @@ export default function NewTodoFormInput() {
 
   function onSubmitNewTodo(values: z.infer<typeof newTodoSchema>) {
     const { task, created_at, completed, completed_at } = values;
-    axios
-      .post(
-        `${import.meta.env.VITE_BE_BASE_URL}/todos`,
-        { task, created_at, completed, completed_at },
-        { withCredentials: true },
-      )
-      .then((res) => console.log(res))
+    axiosInstance
+      .post(`/todos`, { task, created_at, completed, completed_at })
+      .then(() => {
+        mutate();
+      })
       .catch((err) => console.log(err));
   }
 

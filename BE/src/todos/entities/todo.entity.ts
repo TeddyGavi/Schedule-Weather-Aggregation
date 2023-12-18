@@ -4,7 +4,6 @@ import {
   Column,
   PrimaryGeneratedColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
 } from 'typeorm';
 
@@ -24,9 +23,6 @@ export class Todos extends BaseEntity {
 
   @Column({ type: 'timestamp', default: null })
   completed_at: Date;
-
-  // @JoinColumn({ name: 'user_id' })
-  // user_id: string;
 
   @ManyToOne(() => Users, (user) => user.todos, { onDelete: 'CASCADE' })
   user: Users;
