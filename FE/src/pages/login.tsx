@@ -38,14 +38,17 @@ export default function LoginPage() {
     // ✅ This will be type-safe and validated.
     const { email, password } = values;
     axios
-      .post(`${import.meta.env.VITE_BE_BASE_URL}/auth/login`, {
-        email,
-        password,
-      })
+      .post(
+        `${import.meta.env.VITE_BE_BASE_URL}/auth/login`,
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      )
       .then((res) => {
-        const { jwt_token } = res.data;
-        sessionStorage.setItem('jwt', jwt_token);
-        console.log(jwt_token);
         console.log(res);
         router('/todos');
       })

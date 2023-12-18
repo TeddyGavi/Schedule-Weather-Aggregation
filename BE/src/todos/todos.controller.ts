@@ -8,21 +8,21 @@ import {
   Delete,
   ParseIntPipe,
   Query,
+  Request,
   Req,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import {
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiOperation,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 
 @ApiTags('Todos')
-@ApiBearerAuth()
+@ApiCookieAuth()
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
@@ -38,38 +38,42 @@ export class TodosController {
     return this.todosService.findAll();
   }
 
-  @Get(':userId')
+  @Get('/user')
   @ApiOperation({ description: 'Finds all Todos by user id' })
-  findTodosByUserId(@Param('userId') userId: string) {
-    return this.todosService.findTodosbyUser(userId);
+  findTodosByUserId(@Req() req) {
+    return this.todosService.findTodosbyUser(req.user.user_id);
   }
 
-  @Get('/not/')
+  @Get('/not')
   @ApiOperation({ description: 'finds all others todos' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'perPage', required: false, type: Number })
   findTodosByOthers(
-    @Req() req: Request,
+    @Req() req,
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('perPage', new ParseIntPipe({ optional: true })) perPage?: number,
   ) {
-    const userId = req['user'];
-    console.log('contrtoller', req.cookies, userId);
-    return this.todosService.findOtherUsersTodos(userId, page, perPage);
+    const { user_id } = req.user;
+    console.log('in todos/not', req.user);
+    return this.todosService.findOtherUsersTodos(user_id, page, perPage);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.todosService.findOne(id);
+  @Get('/one')
+  findOne(@Req() req) {
+    return this.todosService.findOne(req.user.user_id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
+  @Patch('/update/:id')
+  update(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() updateTodoDto: UpdateTodoDto,
+  ) {
     return this.todosService.update(id, updateTodoDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.todosService.remove(id);
+  @Delete('/delete')
+  remove(@Req() req) {
+    return this.todosService.remove(req.user.user_id);
   }
 }

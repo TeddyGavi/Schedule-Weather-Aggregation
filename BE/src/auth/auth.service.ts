@@ -26,6 +26,7 @@ export class AuthService {
 
   async register(newUser: CreateUserDto) {
     const { email } = newUser;
+    console.log('in register', email);
     const isEmailTaken = await this.usersService.isEmailTaken(email);
 
     if (isEmailTaken) {
@@ -37,10 +38,8 @@ export class AuthService {
   }
 
   async createPayloadWithToken(user: Users) {
-    const payload = { sub: user.id, email: user.email };
+    const payload = { user_id: user.id };
 
-    return {
-      jwt_token: await this.jwtService.signAsync(payload),
-    };
+    return await this.jwtService.signAsync(payload);
   }
 }

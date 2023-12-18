@@ -46,7 +46,7 @@ export class TodosService {
     return todosByUser;
   }
 
-  async findOtherUsersTodos(id: string, skip = 0, take = 10) {
+  async findOtherUsersTodos(id: string, skip = 0, take) {
     const todosByOthers = await this.TodosRepository.find({
       where: {
         user: { id: Not(id) },

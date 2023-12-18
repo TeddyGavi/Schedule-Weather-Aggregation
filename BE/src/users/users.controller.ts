@@ -6,46 +6,43 @@ import {
   Patch,
   Param,
   Delete,
-  Request,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 @ApiTags('Users')
-@ApiBearerAuth('jwt-token')
+@ApiCookieAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('/new')
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
+  @Get('/all')
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findUserById(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  @Get('/profile')
+  findOne(@Req() req) {
+    const { user_id } = req.user;
+    return this.usersService.findOne(user_id);
   }
 
-  @Get('/me')
-  findOne(@Request() req) {
-    const user = req.user;
-    return this.usersService.findOne(user.sub);
+  @Patch('/update')
+  update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    const { user_id } = req.user;
+    return this.usersService.update(user_id, updateUserDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Delete('/delete')
+  remove(@Req() req) {
+    return this.usersService.remove(req.user.user_id);
   }
 }

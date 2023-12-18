@@ -6,24 +6,14 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const port = +process.env.NESTJS_APP_DOCKER_PORT;
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({ credentials: true, origin: 'http://localhost:5173' });
   app.use(cookieParser());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Not Your Todos')
     .setDescription('Procrastination Productivity')
     .setVersion('0.0.1')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT Token',
-        in: 'header',
-      },
-      'jwt-token',
-    )
+    .addCookieAuth('jwt_token')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

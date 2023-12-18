@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,7 +48,7 @@ export class UsersService {
 
   async findOne(id: string) {
     return await this.UserRepository.findOne({
-      where: { id },
+      where: { id: id },
       select: { id: true, firstName: true, lastName: true, email: true },
     });
   }

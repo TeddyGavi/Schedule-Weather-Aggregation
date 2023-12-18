@@ -4,13 +4,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Request,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import SignInUserDto from 'src/users/dto/sign-in-user.dto';
 import { Public } from 'src/setMetaData';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { LocalAuthGuard } from './local-auth.guard';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -21,14 +25,31 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   @ApiOperation({ description: 'Sign in an existing user' })
-  signIn(@Body() signInUser: SignInUserDto) {
-    return this.authService.signIn(signInUser.email, signInUser.password);
+  async signIn(@Body() signInUser: SignInUserDto, @Res() res) {
+    const token = await this.authService.signIn(
+      signInUser.email,
+      signInUser.password,
+    );
+    res.cookie('jwt_token', token, {
+      httpOnly: true,
+      sameSite: 'None',
+      secure: true,
+      expires: new Date(Date.now() + 3600000),
+    });
+    return res.json({ sucess: true });
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('/register')
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
+  async register(@Res() res, @Body() createUserDto: CreateUserDto) {
+    const token = await this.authService.register(createUserDto);
+    res.cookie('jwt_token', token, {
+      httpOnly: true,
+      sameSite: 'None',
+      secure: true,
+      expires: new Date(Date.now() + 3600000),
+    });
+    return res.json({ sucess: true });
   }
 }
