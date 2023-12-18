@@ -38,5 +38,14 @@ services:
       - ./:/app
       - /app/node_modules
 
+  react-fe:
+    container_name: react-fe
+    build:
+      context: ./FE
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+    env_file:
+      - ./.env
 volumes:
   mysqldb:
