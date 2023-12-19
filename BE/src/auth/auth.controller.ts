@@ -6,17 +6,13 @@ import {
   HttpStatus,
   Post,
   Req,
-  Request,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import SignInUserDto from 'src/users/dto/sign-in-user.dto';
 import { Public } from 'src/setMetaData';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -66,8 +62,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Get('validate')
   async validate(@Res() res, @Req() req) {
-    console.log('hi from validate, controller', req.user);
-
     return res.json({ success: true });
   }
 }

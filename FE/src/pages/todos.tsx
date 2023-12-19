@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Todo } from '../components/todo';
-import axios from 'axios';
 import NewTodoFormInput from '../components/new-todo';
 import Header from '../components/header';
 import { PaginationCount } from '../components/pagination-count';
 import { GETTodos } from '../fetching/GET-todos';
 import useSWR from 'swr';
 import { Skeleton } from '@/components/ui/skeleton';
+import axiosInstance from '../fetching/axios-config';
 
 interface ITodoDB {
   id: string;
@@ -31,7 +31,7 @@ export default function TodosPage() {
   } = useSWR<Todos>(['/todos', page], () => GETTodos(page));
 
   const handleCountUp = () => {
-    setPage((prev) => (prev += 1));
+    setPage((prev) => (prev > todoList!.totalPages ? 1 : (prev += 1)));
   };
 
   const handleCountDown = () => {
@@ -39,15 +39,11 @@ export default function TodosPage() {
   };
 
   const handleClickedComplete = (id: string) => {
-    axios
-      .patch(
-        `${import.meta.env.VITE_BE_BASE_URL}/todos/update/${id}`,
-        {
-          completed_at: new Date(Date.now()),
-          completed: true,
-        },
-        { withCredentials: true },
-      )
+    axiosInstance
+      .patch(`/todos/update/${id}`, {
+        completed_at: new Date(Date.now()),
+        completed: true,
+      })
       .then(() => {
         mutate(todoList);
       })
@@ -55,9 +51,18 @@ export default function TodosPage() {
   };
 
   const handleClickDelete = (id: string) => {
-    axios
-      .delete(`${import.meta.env.VITE_BE_BASE_URL}/todos/delete/${id}`, {
-        withCredentials: true,
+    axiosInstance
+      .delete(`/todos/delete/${id}`)
+      .then(() => {
+        mutate(todoList);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleUpdateTask = (id: string, task?: string) => {
+    axiosInstance
+      .patch(`/todos/update/${id}`, {
+        task: task,
       })
       .then(() => {
         mutate(todoList);
@@ -104,6 +109,7 @@ export default function TodosPage() {
                 completed_at={completed_at}
                 created_at={created_at}
                 ownerFirstName={ownerFirstName}
+                handleUpdateTask={handleUpdateTask}
               />
             ),
           )

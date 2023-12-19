@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +12,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axiosInstance from '../fetching/axios-config';
 
 const formSchema = z.object({
   email: z.string().email().trim(),
@@ -28,6 +28,7 @@ const formSchema = z.object({
 });
 
 export default function RegisterPage() {
+  const router = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,17 +44,15 @@ export default function RegisterPage() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     const { email, firstName, lastName, password } = values;
-    axios
-      .post(`${import.meta.env.VITE_BE_BASE_URL}/auth/register`, {
+    axiosInstance
+      .post(`/auth/register`, {
         email,
         firstName,
         lastName,
         password,
       })
-      .then((res) => console.log(res))
+      .then(() => router('/todos'))
       .catch((err) => console.log(err));
-
-    console.log(values);
   }
   return (
     <div className="bg-white bg-opacity-90 p-3 w-10/12 md:w-6/12 rounded-lg">
@@ -74,6 +73,7 @@ export default function RegisterPage() {
                 <FormLabel>Fist Name</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="first name"
                     placeholder="First Name"
                     type="text"
                     required
@@ -93,6 +93,7 @@ export default function RegisterPage() {
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="last name"
                     placeholder="Last Name"
                     type="text"
                     required
@@ -112,6 +113,7 @@ export default function RegisterPage() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="new-email"
                     placeholder="example@gmail.com"
                     type="email"
                     required
@@ -131,6 +133,7 @@ export default function RegisterPage() {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="new-password"
                     placeholder="password"
                     type="password"
                     required

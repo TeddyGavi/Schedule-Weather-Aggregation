@@ -88,9 +88,10 @@ export class TodosService {
   async update(id: string, updateTodoDto: UpdateTodoDto) {
     const todo = await this.findOne(id);
     if (!todo) return { todo: 'Not Found' };
-    todo.completed = updateTodoDto.completed;
-    const date = new Date();
-    todo.completed_at = date;
+    const { completed, completed_at, task } = updateTodoDto;
+    todo.completed = completed ? completed : false;
+    todo.completed_at = completed_at ? new Date() : null;
+    todo.task = task ? task : todo.task;
 
     return await this.TodosRepository.save(todo);
   }

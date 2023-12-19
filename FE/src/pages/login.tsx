@@ -57,6 +57,7 @@ export default function LoginPage() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="email"
                     placeholder="example@gmail.com"
                     type="email"
                     required
@@ -76,6 +77,7 @@ export default function LoginPage() {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
+                    autoComplete="current-password"
                     placeholder="password"
                     type="password"
                     required

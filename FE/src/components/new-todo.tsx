@@ -26,7 +26,11 @@ const newTodoSchema = z.object({
 export default function NewTodoFormInput({
   mutate,
 }: {
-  mutate: MutatorCallback<Todos[]>;
+  mutate:
+    | Todos
+    | Promise<Todos | undefined>
+    | MutatorCallback<Todos>
+    | undefined;
 }) {
   const form = useForm<z.infer<typeof newTodoSchema>>({
     resolver: zodResolver(newTodoSchema),

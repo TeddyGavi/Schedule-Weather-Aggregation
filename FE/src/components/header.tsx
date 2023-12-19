@@ -7,11 +7,14 @@ export default function Header() {
   const router = useNavigate();
 
   const handleLogout = async () => {
-    return await logOut(() => router('/login'));
+    await logOut(() => router('/login'));
   };
   return (
-    <Button onClick={handleLogout} className=" border border-black">
-      Logout
-    </Button>
+    <div className="flex gap-2 items-center ">
+      <p className="pr-4 ">Hi!</p>
+      <Button onClick={handleLogout} className=" border border-black">
+        Logout
+      </Button>
+    </div>
   );
 }

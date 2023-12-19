@@ -1,7 +1,14 @@
-import axios from 'axios';
 import { ReactNode, createContext, useState } from 'react';
+import axiosInstance from '../fetching/axios-config';
+
+interface IUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  id: string;
+}
 interface AuthContextProps {
-  isUserLoggedIn: boolean;
+  isUserLoggedIn: boolean | IUser;
   isLoggedIn: () => Promise<void>;
   signIn: (email: string, password: string, cb: () => void) => Promise<void>;
   logOut: (cb: () => void) => Promise<void>;
@@ -25,7 +32,7 @@ const initProps: AuthContextProps = {
 export const AuthContext = createContext(initProps);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean | IUser>(false);
 
   async function signIn(
     email: string,
@@ -33,18 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     cb: () => void,
   ): Promise<void> {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_BE_BASE_URL}/auth/login`,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        },
-      );
+      await axiosInstance.post(`/auth/login`, {
+        email,
+        password,
+      });
 
-      setIsUserLoggedIn(() => true);
+      setIsUserLoggedIn(true);
       cb();
     } catch (error) {
       console.log(error);
@@ -54,10 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function isLoggedIn(): Promise<void> {
     try {
-      await axios.get(`${import.meta.env.VITE_BE_BASE_URL}/auth/validate`, {
-        withCredentials: true,
-      });
-      setIsUserLoggedIn(() => true);
+      const user: IUser = await axiosInstance.get(`/users/profile`);
+      setIsUserLoggedIn(user);
     } catch (error) {
       console.log(error);
       throw error;
@@ -66,10 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function logOut(cb: () => void): Promise<void> {
     try {
-      await axios.get(`${import.meta.env.VITE_BE_BASE_URL}/auth/logout`, {
-        withCredentials: true,
-      });
-      setIsUserLoggedIn(() => false);
+      await axiosInstance.get(`/auth/logout`);
+      setIsUserLoggedIn(false);
       cb();
     } catch (error) {
       console.log(error);
@@ -77,6 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const value = { isUserLoggedIn, isLoggedIn, signIn, logOut };
+  const value = {
+    isUserLoggedIn,
+    setIsUserLoggedIn,
+    isLoggedIn,
+    signIn,
+    logOut,
+  };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
